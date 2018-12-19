@@ -1,0 +1,1 @@
+../_selbstbericht-technische-informatik/0050-SWOT-Analyse.md

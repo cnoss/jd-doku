@@ -1,0 +1,118 @@
+{% comment %}##################################################################
+-------------------------------------------------------------------------------
+
+studienverlaufsplan
+braucht: kuerzel des Studiengangs
+liefert: nix, sondern gibt den Studienverlaufsplan aus
+
+-------------------------------------------------------------------------------
+###############################################################{% endcomment %}
+
+
+
+
+
+
+{% comment %}------------------------------------------------------------------
+
+Übergabeparameter annehmen
+---------------------------------------------------------------{% endcomment %}
+
+{% assign kuerzel=include.kuerzel %}
+{% assign headline=include.headline %}
+{% include /functions/get-content-module.html kuerzel=kuerzel %}
+
+
+
+
+
+{% comment %}------------------------------------------------------------------
+
+Fachsemester aufbauen
+---------------------------------------------------------------{% endcomment %}
+{% assign alle_fachsemester = "" | split: "|" %}
+{% for i in (1..site.data.studiengaenge[kuerzel].studiendauer) %}
+{% if i == 4 %}
+{% continue %}
+{% else %}
+{% assign alle_fachsemester=alle_fachsemester | push: i %}
+{% endif %}
+{% endfor %}
+
+
+
+
+
+{% comment %}------------------------------------------------------------------
+
+Studienverlaufsplan anzeigen
+---------------------------------------------------------------{% endcomment %}
+
+<section class="section">
+    <div class="container">
+        <div class="content">
+            <h1>Studienverlaufsplan {{site.data.studiengaenge[kuerzel].name}}</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="50%">Modulname</th>
+                        <th>Kürzel</th>
+                        <th>CP</th>
+                        <th>Modulverantwortlicher</th>
+                    </tr>
+                </thead>
+                {% for fachsemester in alle_fachsemester %}
+
+                <tr class="no-border">
+                    <th colspan="4">{{fachsemester}}. Fachsemester </th>
+                </tr>
+                {% assign sorted_pages = (module_dieses_studiengangs) | where:"studiensemester",fachsemester | sort:
+                'title') %}
+                {% for modulbeschreibung in sorted_pages %}
+                {% assign cps = cps | plus: modulbeschreibung.kreditpunkte %}
+                <tr>
+                    <td>
+                        <a href="{{site.baseurl}}{{modulbeschreibung.url}}">{{modulbeschreibung.title}}</a>
+                        {% for teilmodulbeschreibung in sorted_teilmodule %}
+                        {% if teilmodulbeschreibung.parent == modulbeschreibung.kuerzel %}
+                        - <a class="is-small is-less-important" href="{{site.baseurl}}{{teilmodulbeschreibung.url}}">{{teilmodulbeschreibung.title}}</a><br>
+                        {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{modulbeschreibung.kuerzel}}</td>
+                    <td>{{modulbeschreibung.kreditpunkte}}</td>
+                    <td>
+                        {% include /functions/resolve-names.html
+                        modulverantwortlich=modulbeschreibung.modulverantwortlich %}
+                        {{modulverantwortliche}}
+                    </td>
+                </tr>
+                {% endfor %}
+
+                <tr>
+                    <td colspan="2">Summe CP<br><br></td>
+                    <td colspan="3">{{cps}}</td>
+                </tr>
+                {% assign cps = 0 %}
+                {% endfor %}
+
+            </table>
+
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="content">
+            <h1>Modulbeschreibungen</h1>
+
+            <ol>
+                {% assign sorted_pages = (module_dieses_studiengangs | sort: 'title') %}
+                {% for modulbeschreibung in sorted_pages %}
+                <li><a href="{{site.baseurl}}{{modulbeschreibung.url}}">{{modulbeschreibung.title}}</li></a>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+</section>

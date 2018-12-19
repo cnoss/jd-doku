@@ -1,0 +1,55 @@
+{% comment %}
+-------------------------------------------------------------------------------
+Übergabeparameter annehmen
+-------------------------------------------------------------------------------
+{% endcomment %}
+
+{% assign name=include.name %}
+
+
+
+{% comment %}
+-------------------------------------------------------------------------------
+Collections holen
+-------------------------------------------------------------------------------
+{% endcomment %}
+
+{% assign collections=site.collections %}
+
+
+
+{% comment %}
+-------------------------------------------------------------------------------
+Durch Collections iterieren und Daten zuordnen
+-------------------------------------------------------------------------------
+{% endcomment %}
+
+{% for collection in collections %}
+{% if collection.label==name %}
+{% assign myCollection=collection %}
+{% assign headline=collection.headline %}
+{% assign removePath=collection.relative_directory | append:'/' %}
+{% endif %}
+{% endfor %}
+
+
+
+{% comment %}
+-------------------------------------------------------------------------------
+Subkapitel holen und verarbeiten
+-------------------------------------------------------------------------------
+{% endcomment %}
+
+{% assign chapters="" | split: "," %}
+{% assign last_chapter="" %}
+{% assign docs=myCollection.docs | sort: 'path' %}
+
+{% for doc in docs %}
+{% assign path=doc.path | remove_first:removePath | split:'/' %}
+{% assign subpath=removePath | append: path.first %}
+
+{% if subpath != last_chapter %}
+{% assign chapters = chapters | push: subpath %}
+{% assign last_chapter = subpath %}
+{% endif %}
+{% endfor %}

@@ -1,0 +1,3 @@
+# Quellenverzeichnis§pathlabel:/mi-2017/selbstbericht/9000-quellenverzeichnis§
+
+{% bibliography %}

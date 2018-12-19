@@ -1,0 +1,92 @@
+{% comment %}##################################################################
+-------------------------------------------------------------------------------
+
+get-content-module
+braucht: kuerzel des Studiengangs
+liefert:
+module_dieses_studiengangs: Alle Module des Studiengangs
+module_ss: Alle Module des Studiengangs im Sommersemester
+module_ss: Alle Module des Studiengangs im Wintersemester
+
+-------------------------------------------------------------------------------
+###############################################################{% endcomment %}
+
+
+
+
+
+
+{% comment %}------------------------------------------------------------------
+
+Übergabeparameter annehmen
+---------------------------------------------------------------{% endcomment %}
+
+{% assign kuerzel=include.kuerzel %}
+
+
+
+
+
+
+{% comment %}------------------------------------------------------------------
+
+Leere Arrays für Module deklarieren
+---------------------------------------------------------------{% endcomment %}
+
+{% assign module_ss = "" | split:"|" %}
+{% assign module_ws = "" | split:"|" %}
+
+
+
+
+
+{% comment %}------------------------------------------------------------------
+
+Modulbeschreibungen auslesen, durch die Module iterieren und
+Daten strukturieren
+---------------------------------------------------------------{% endcomment %}
+
+{% assign alle_module = (site.module | where: "status", "aktiv") %}
+{% assign module_dieses_studiengangs = "" | split:"|" %}
+
+{% for modul in alle_module %}
+{% assign studiengaenge = modul.enthalten-in | replace: " ", "" | split: "," %}
+
+
+
+{% comment %} .........................
+Gehört das Modul zum Studiengang?
+Wenn ja: Daten sammeln
+.......................{% endcomment %}
+
+{% for studiengang in studiengaenge %}
+{% if studiengang==kuerzel %}
+{% assign module_dieses_studiengangs = module_dieses_studiengangs | push: modul %}
+
+
+
+{% comment %} .........................
+Liegt das Modul im Sommersemester oder Wintersemester?
+.......................{% endcomment %}
+
+{% assign value = modul.studiensemester | modulo:2 %}
+{% if value == 0 %}
+{% capture item %}
+<a href="{{site.baseurl}}{{modul.url}}">Bachelor: {{modul.title}}</a>
+{% endcapture %}
+{% assign module_ss = module_ss | push: item %}
+
+{% else %}
+
+{% capture item %}
+<a href="{{site.baseurl}}{{modul.url}}">Bachelor: {{modul.title}}</a>
+{% endcapture %}
+{% assign module_ws = module_ws | push: item %}
+
+{% endif %}{% comment %} EO Sommersemester oder Wintersemester {% endcomment %}
+
+{% endif %}{% comment %} EO studiengang==kuerzel {% endcomment %}
+
+{% endfor %}{% comment %} EO studiengaenge {% endcomment %}
+
+{% endfor %}{% comment %} EO alle_module {% endcomment %}

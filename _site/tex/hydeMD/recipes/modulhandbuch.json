@@ -1,0 +1,19 @@
+{
+	"srcPath": "../../_module",
+	
+	"rootDir": "/",
+	
+	"placeholder": {
+		"title": "Modulhandbuch Code \\& Context"
+	},
+
+	"postprocessLatex": {
+		"replace": [
+			[ "/\\\\section/"       , "\\\\chapter" ],
+        	[ "/\\\\subsection/"    , "\\\\section*" ],
+        	[ "/\\\\subsubsection/" , "\\\\subsection*" ],
+        	
+        	[ "/includegraphics/" , "includegraphics[width=\\\\columnwidth]" ]
+		]
+	}
+}
